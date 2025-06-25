@@ -82,7 +82,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
      <div class="flex-1 flex flex-col justify-center items-center p-10 overflow-y-auto">
       <h2 class="text-xl font-semibold mb-3 text-[#328E6E]">Buat akun baru</h2>
 
-      <?php show_flash(); // Tampilkan flash message di sini ?>
+      <?php 
+      // Tampilkan flash message kecuali jika isinya timeout
+      if (isset($_SESSION['flash']) && strpos($_SESSION['flash']['message'], 'Sesi Anda telah berakhir') === false) {
+          show_flash();
+          unset($_SESSION['flash']);
+      }
+      ?>
 
       <form method="POST" action="" class="flex flex-col gap-[15px] w-full">
         <input type="text" id="nama" name="nama" placeholder="Nama Lengkap" required

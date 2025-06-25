@@ -171,8 +171,8 @@ $tugas = $result->fetch_all(MYSQLI_ASSOC);
                     <input type="hidden" name="id" value="<?php echo $t['id_tugas']; ?>">
                     <input type="checkbox"
                       class="form-checkbox h-5 w-5 text-[#328E6E] rounded checkbox-anim"
-                      <?php if ($t['status_tugas'] === 'selesai') echo 'checked disabled'; ?>
-                      <?php if ($t['status_tugas'] === 'belum') echo 'onchange=this.form.submit()'; ?>
+                      <?php if ($t['status_tugas'] === 'selesai') echo 'checked'; ?>
+                      onchange="this.form.submit()"
                       onclick="event.stopPropagation();"
                     />
                   </form>

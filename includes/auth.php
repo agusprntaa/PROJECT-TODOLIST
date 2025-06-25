@@ -11,24 +11,21 @@ require 'koneksi.php';
 function login($email, $password) {
     global $koneksi;
 
-    // Cegah SQL Injection
-    $email = mysqli_real_escape_string($koneksi, $email);
-    $password = mysqli_real_escape_string($koneksi, $password);
-
-    // Query untuk memeriksa email
-    $query = "SELECT * FROM users WHERE email = '$email'";
-    $result = mysqli_query($koneksi, $query);
+    // Query dengan prepared statement untuk mencegah SQL Injection
+    $stmt = $koneksi->prepare("SELECT * FROM users WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $result = $stmt->get_result();
 
     // Periksa apakah email ditemukan
-    if (mysqli_num_rows($result) > 0) {
-        $user = mysqli_fetch_assoc($result);
+    if ($result->num_rows > 0) {
+        $user = $result->fetch_assoc();
 
         // Verifikasi password
         if (password_verify($password, $user['password'])) {
             // Simpan data pengguna ke sesi
             $_SESSION['id_user'] = $user['id_user'];
             $_SESSION['nama'] = $user['nama'];
-
             return true; // Login berhasil
         } else {
             return false; // Password salah
@@ -42,27 +39,24 @@ function login($email, $password) {
 function register($nama, $email, $password) {
     global $koneksi;
 
-    // Cegah SQL Injection
-    $nama = mysqli_real_escape_string($koneksi, $nama);
-    $email = mysqli_real_escape_string($koneksi, $email);
-    $password = mysqli_real_escape_string($koneksi, $password);
-
     // Cek apakah email sudah terdaftar
-    $query = "SELECT * FROM users WHERE email = '$email'";
-    $result = mysqli_query($koneksi, $query);
+    $stmt = $koneksi->prepare("SELECT id_user FROM users WHERE email = ?");
+    $stmt->bind_param("s", $email);
+    $stmt->execute();
+    $stmt->store_result();
 
-    if (mysqli_num_rows($result) > 0) {
+    if ($stmt->num_rows > 0) {
         return false; // Email sudah terdaftar
     }
 
     // Hash password sebelum disimpan
     $hashed_password = password_hash($password, PASSWORD_BCRYPT);
 
-    // Query untuk menambahkan pengguna baru
-    $query = "INSERT INTO users (nama, email, password) VALUES ('$nama', '$email', '$hashed_password')";
-    $result = mysqli_query($koneksi, $query);
+    // Query untuk menambahkan pengguna baru dengan prepared statement
+    $stmt = $koneksi->prepare("INSERT INTO users (nama, email, password) VALUES (?, ?, ?)");
+    $stmt->bind_param("sss", $nama, $email, $hashed_password);
+    $result = $stmt->execute();
 
     return $result; // True jika berhasil, false jika gagal
 }
-
 ?>

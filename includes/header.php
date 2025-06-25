@@ -2,7 +2,13 @@
 // Mulai sesi
 if (session_status() == PHP_SESSION_NONE) {
     session_start();
-    include 'includes/auth.php';
+}
+require_once 'includes/auth.php';
+
+// Cek apakah user sudah login, jika tidak arahkan ke login
+if (!isset($_SESSION['id_user'])) {
+    header('Location: login.php');
+    exit;
 }
 
 // Ambil data pengguna dari session
@@ -11,7 +17,7 @@ $email_user = isset($_SESSION['email']) ? $_SESSION['email'] : 'user@email.com';
 
 // Ambil avatar user dari database
 $avatar = 'styles/assets/default-avatar.png'; // default
-if (isset($_SESSION['id_user'])) {
+if (isset($_SESSION['id_user'])) { //Cek Apakah User Sudah Login
     require_once 'includes/koneksi.php';
     $id_user = $_SESSION['id_user'];
     $stmt = $koneksi->prepare("SELECT avatar FROM users WHERE id_user=?");

@@ -11,7 +11,11 @@ if (isset($_SESSION['id_user'])) {
 
 $error = "";
 
-//proses login
+// Set flash khusus timeout hanya di login.php
+if (isset($_GET['timeout'])) {
+  set_flash('Sesi Anda telah berakhir karena tidak ada aktivitas. Silakan login kembali.', 'error');
+}
+
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
   $email = trim($_POST['email']);
   $password = trim($_POST['password']);
@@ -69,13 +73,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     <!-- Kanan -->
     <div class="flex-1 flex flex-col justify-center items-center p-10">
       <h2 class="text-xl font-semibold mb-3 text-[#328E6E]">Masuk ke akun anda</h2>
-      <?php
-      show_flash(); // Menampilkan flash message
-      
-      if (isset($_GET['timeout'])) {
-        set_flash('Sesi Anda telah berakhir karena tidak ada aktivitas. Silakan login kembali.', 'error');
-      }
-      ?>
+      <?php show_flash(); // Menampilkan flash message ?>
       <form method="POST" action="" class="flex flex-col gap-4 w-full max-w-[300px] mt-1">
         <input type="email" name="email" placeholder="Email"
           class="w-full px-4 py-2 text-sm rounded-lg border border-[#ccc] focus:outline-none focus:ring-2 focus:ring-[#328E6E]">
